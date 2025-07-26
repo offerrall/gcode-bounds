@@ -2,7 +2,6 @@ from pathlib import Path
 
 from . import _gcode_parser
 
-__version__ = "1.0.0"
 
 def get_bounding_box(file_path: str | Path) -> tuple[float, float, float, float]:
     """
