@@ -3,6 +3,9 @@
 Fast G-code frame bounding box generator and framing G-code generator in pure C, designed for CNC, laser, and 3D printer files. This library is optimized for speed and efficiency, making it ideal for processing large files quickly.
 
 
+Note: Only X and Y coordinates are considered for bounding boxes, as Z coordinates are not considered in the bounding box calculations.
+
+
 ## Features
 
 - ⚡ **Pure C implementation** - 26x faster than Python
