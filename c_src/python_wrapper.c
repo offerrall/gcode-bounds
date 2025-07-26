@@ -23,10 +23,10 @@ static PyObject* py_get_bounding_box(PyObject* self, PyObject* args) {
             
         case GCODE_SUCCESS:
             return Py_BuildValue("(dddd)", 
-                                round(min_x * 1000.0) / 1000.0,
-                                round(max_x * 1000.0) / 1000.0,
-                                round(min_y * 1000.0) / 1000.0,
-                                round(max_y * 1000.0) / 1000.0);
+                                min_x,
+                                max_x,
+                                min_y,
+                                max_y);
             
         default:
             PyErr_SetString(PyExc_RuntimeError, "Unknown error occurred");
