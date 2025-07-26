@@ -12,6 +12,8 @@ Built with a **pure C extension** for maximum speed and zero runtime dependencie
 ## Installation
 
 ```bash
+git clone https://github.com/offerrall/gcode-bounds
+cd gcode-bounds
 pip install .
 ```
 
