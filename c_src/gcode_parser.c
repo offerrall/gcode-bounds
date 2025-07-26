@@ -3,7 +3,38 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
-#include <ctype.h>
+
+
+static inline double fast_atof(const char* str) {
+    double result = 0.0;
+    double sign = 1.0;
+    double fraction = 0.0;
+    double divisor = 1.0;
+    int in_fraction = 0;
+    
+    if (*str == '-') {
+        sign = -1.0;
+        str++;
+    } else if (*str == '+') {
+        str++;
+    }
+    
+    while (*str && (*str >= '0' && *str <= '9' || *str == '.')) {
+        if (*str == '.' && !in_fraction) {
+            in_fraction = 1;
+        } else if (*str >= '0' && *str <= '9') {
+            if (in_fraction) {
+                divisor *= 10.0;
+                fraction = fraction * 10.0 + (*str - '0');
+            } else {
+                result = result * 10.0 + (*str - '0');
+            }
+        }
+        str++;
+    }
+    
+    return sign * (result + fraction / divisor);
+}
 
 void update_bbox_from_line(const char* line,
                            double* min_x,
@@ -12,24 +43,35 @@ void update_bbox_from_line(const char* line,
                            double* max_y) {
 
     const char* p = line;
+    
+    while (*p && *p != 'X' && *p != 'Y') {
+        p++;
+    }
+    
     while (*p) {
         if (*p == 'X' || *p == 'Y') {
             char axis = *p++;
-            char buf[64];
-            int i = 0;
             
-            while (*p && (isdigit(*p) || *p == '.' || *p == '-' || *p == '+') && i < 63) {
-                buf[i++] = *p++;
+            // Skip spaces
+            while (*p == ' ' || *p == '\t') {
+                p++;
             }
-            buf[i] = '\0';
-            double val = atof(buf);
             
+            // Fast number parsing
+            double val = fast_atof(p);
+            
+            // Update bounding box
             if (axis == 'X') {
                 if (val < *min_x) *min_x = val;
                 if (val > *max_x) *max_x = val;
             } else {
                 if (val < *min_y) *min_y = val;
                 if (val > *max_y) *max_y = val;
+            }
+            
+            // Skip past number
+            while (*p >= '0' && *p <= '9' || *p == '.' || *p == '-' || *p == '+') {
+                p++;
             }
         } else {
             p++;
@@ -53,8 +95,14 @@ int get_bounding_box(const char* file_path,
         return GCODE_ERROR_FILE_NOT_FOUND;
     }
 
-    char line[512];
+    char line[1024];
     while (fgets(line, sizeof(line), file)) {
+        
+        if (line[0] == 'G' && line[1] == '0' && 
+            strstr(line, "X0") && strstr(line, "Y0")) {
+            continue;
+        }
+        
         update_bbox_from_line(line, min_x, max_x, min_y, max_y);
     }
 
