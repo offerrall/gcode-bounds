@@ -1,11 +1,10 @@
 from pathlib import Path
-from typing import Union, Tuple, List
 
 from . import _gcode_parser
 
 __version__ = "1.0.0"
 
-def get_bounding_box(file_path: Union[str, Path]) -> Tuple[float, float, float, float]:
+def get_bounding_box(file_path: str | Path) -> tuple[float, float, float, float]:
     """
     Extract bounding box coordinates from a G-code file.
     
@@ -26,11 +25,11 @@ def get_bounding_box(file_path: Union[str, Path]) -> Tuple[float, float, float, 
     return _gcode_parser.get_bounding_box(str(file_path))
 
 def generate_framing_gcode(min_x: float,
-                          max_x: float,
-                          min_y: float,
-                          max_y: float,
-                          power: float = 10.0,
-                          speed: int = 1000) -> List[str]:
+                           max_x: float,
+                           min_y: float,
+                           max_y: float,
+                           power: float = 10.0,
+                           speed: int = 1000) -> list[str]:
     """
     Generate G-code for framing a bounding box.
     
